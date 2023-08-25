@@ -19,10 +19,17 @@ fun Home(
     state: State<HomeState>
 ) {
     BaseScaffold(title = stringResource(R.string.home_title)) {
-        Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
-            LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                items(items = state.value.coinData) { coin ->
-                    Text(text = coin.name)
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            if (state.value.error) {
+                Text(text = "There was an error")
+            } else {
+                LazyColumn(modifier = Modifier.fillMaxWidth()) {
+                    items(items = state.value.coinData) { coin ->
+                        Text(text = coin.name)
+                    }
                 }
             }
         }

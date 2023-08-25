@@ -25,7 +25,12 @@ class HomeViewModel(
 
     fun loadCoinData() {
         viewModelScope.launch(Dispatchers.IO) {
-            _state.update { it.copy(coinData = getCoinsUseCase()) }
+            val coinResponse = getCoinsUseCase()
+            if (coinResponse != null) {
+                _state.update { it.copy(coinData = coinResponse) }
+            } else {
+                _state.update { it.copy(error = true) }
+            }
         }
     }
 
@@ -43,5 +48,6 @@ class HomeViewModel(
 }
 
 data class HomeState(
+    val error: Boolean = false,
     val coinData: List<Coin> = emptyList()
 )
