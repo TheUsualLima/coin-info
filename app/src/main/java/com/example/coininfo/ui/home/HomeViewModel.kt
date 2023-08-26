@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.coininfo.data.Coin
 import com.example.coininfo.domain.GetCoinsUseCase
+import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -24,10 +25,10 @@ class HomeViewModel(
     }
 
     fun loadCoinData() {
-        viewModelScope.launch(Dispatchers.IO) {
-            val coinResponse = getCoinsUseCase()
+        viewModelScope.launch {
+            val coinResponse = getCoinsUseCase.execute()
             if (coinResponse != null) {
-                _state.update { it.copy(coinData = coinResponse) }
+                _state.update { it.copy(coinData = coinResponse, error = false) }
             } else {
                 _state.update { it.copy(error = true) }
             }
