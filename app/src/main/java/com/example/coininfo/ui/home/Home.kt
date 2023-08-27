@@ -1,5 +1,10 @@
+@file:OptIn(ExperimentalFoundationApi::class)
+
 package com.example.coininfo.ui.home
 
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +18,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import com.example.coininfo.R
 import com.example.coininfo.ui.composables.BaseScaffold
+import com.example.coininfo.ui.home.composables.CoinItem
 
 @Composable
 fun Home(
@@ -27,8 +33,16 @@ fun Home(
                 Text(text = "There was an error")
             } else {
                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
-                    items(items = state.value.coinData) { coin ->
-                        Text(text = coin.name)
+                    items(
+                        items = state.value.coinData,
+                        key = {
+                            it.id
+                        }
+                    ) { coin ->
+                        CoinItem(
+                            coin = coin,
+                            modifier = Modifier.animateItemPlacement(animationSpec = tween(500))
+                        )
                     }
                 }
             }

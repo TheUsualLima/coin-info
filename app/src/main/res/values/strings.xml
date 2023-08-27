@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">Coin Info</string>
     <string name="home_title">Coin Info</string>
+    <string name="coin_item_active">Active</string>
+    <string name="coin_item_inactive">Inactive</string>
 </resources>

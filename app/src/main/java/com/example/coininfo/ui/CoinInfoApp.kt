@@ -21,7 +21,7 @@ fun CoinInfoApp(
             val homeViewModel = viewModel<HomeViewModel>(
                 factory = HomeViewModel.Factory(getCoinsUseCase = GetCoinsUseCase())
             )
-            Home(homeViewModel.state.collectAsState())
+            Home(state = homeViewModel.state.collectAsState())
         }
     }
 }
