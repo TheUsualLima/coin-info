@@ -29,9 +29,49 @@ class HomeViewModel(
             val coinResponse = getCoinsUseCase.execute()
             if (coinResponse != null) {
                 _state.update { it.copy(coinData = coinResponse, error = false) }
+                shuffle()
             } else {
                 _state.update { it.copy(error = true) }
             }
+        }
+    }
+
+    fun shuffle() {
+        viewModelScope.launch {
+            val list = mutableListOf<Coin>()
+            val testItems = mutableListOf(
+                Coin(
+                    id = "btc-1",
+                    name = "Bitcoin",
+                    symbol = "BTC",
+                    rank = 1,
+                    isNew = false,
+                    isActive = true,
+                    type = "coin"
+                ),
+                Coin(
+                    id = "2",
+                    name = "Bitcoin",
+                    symbol = "BTC",
+                    rank = 2,
+                    isNew = false,
+                    isActive = true,
+                    type = "coin"
+                ),
+                Coin(
+                    id = "3",
+                    name = "Bitcoin",
+                    symbol = "BTC",
+                    rank = 3,
+                    isNew = false,
+                    isActive = true,
+                    type = "coin"
+                )
+            )
+            list.add(testItems.removeAt((0..testItems.lastIndex).random()))
+            list.add(testItems.removeAt((0..testItems.lastIndex).random()))
+            list.add(testItems.removeAt((0..testItems.lastIndex).random()))
+            _state.update { it.copy(coinData = list) }
         }
     }
 

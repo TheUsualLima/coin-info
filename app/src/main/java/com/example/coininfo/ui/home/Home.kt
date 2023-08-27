@@ -4,6 +4,7 @@ package com.example.coininfo.ui.home
 
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,7 +25,8 @@ import com.example.coininfo.ui.home.composables.CoinItem
 
 @Composable
 fun Home(
-    state: State<HomeState>
+    state: State<HomeState>,
+    shuffle: () -> Unit
 ) {
     BaseScaffold(title = stringResource(R.string.home_title)) {
         Column(
@@ -45,6 +47,7 @@ fun Home(
                             coin = coin,
                             modifier = Modifier
                                 .animateItemPlacement(animationSpec = tween(500))
+                                .clickable { shuffle() }
                                 .padding(vertical = 8.dp)
                         )
                         if (index < state.value.coinData.lastIndex)
