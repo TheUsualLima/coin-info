@@ -20,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.coininfo.R
 import com.example.coininfo.ui.composables.BaseScaffold
+import com.example.coininfo.ui.composables.LoadingSpinner
 import com.example.coininfo.ui.home.composables.CoinItem
 
 @Composable
@@ -47,11 +48,11 @@ fun Home(
                                 .animateItemPlacement(animationSpec = tween(500))
                                 .padding(vertical = 8.dp)
                         )
-                        if (index < state.value.coinData.lastIndex)
-                            Divider(modifier = Modifier.padding(horizontal = 24.dp))
+                        if (index < state.value.coinData.lastIndex) Divider(modifier = Modifier.padding(horizontal = 24.dp))
                     }
                 }
             }
         }
+        if (state.value.isLoading) LoadingSpinner(modifier = Modifier.fillMaxSize())
     }
 }

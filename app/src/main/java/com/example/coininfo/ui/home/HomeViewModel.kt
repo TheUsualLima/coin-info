@@ -5,8 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.coininfo.data.Coin
 import com.example.coininfo.domain.GetCoinsUseCase
-import kotlinx.coroutines.CoroutineDispatcher
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,13 +24,23 @@ class HomeViewModel(
 
     fun loadCoinData() {
         viewModelScope.launch {
+            startLoading()
             val coinResponse = getCoinsUseCase.execute()
             if (coinResponse != null) {
                 _state.update { it.copy(coinData = coinResponse, error = false) }
             } else {
                 _state.update { it.copy(error = true) }
             }
+            stopLoading()
         }
+    }
+
+    private fun startLoading() {
+        _state.update { it.copy(isLoading = true) }
+    }
+
+    private fun stopLoading() {
+        _state.update { it.copy(isLoading = false) }
     }
 
     class Factory(
@@ -50,5 +58,6 @@ class HomeViewModel(
 
 data class HomeState(
     val error: Boolean = false,
+    val isLoading: Boolean = false,
     val coinData: List<Coin> = emptyList()
 )
