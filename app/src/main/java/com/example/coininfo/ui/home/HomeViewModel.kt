@@ -27,13 +27,20 @@ class HomeViewModel(
             startLoading()
             val coinResponse = getCoinsUseCase.execute()
             if (coinResponse != null) {
-                _state.update { it.copy(coinData = coinResponse, error = false) }
+                _state.update {
+                    it.copy(
+                        coinData = sortByName(coinResponse),
+                        error = false
+                    )
+                }
             } else {
                 _state.update { it.copy(error = true) }
             }
             stopLoading()
         }
     }
+
+    private fun sortByName(coinList: List<Coin>): List<Coin> = coinList.sortedBy { it.name }
 
     private fun startLoading() {
         _state.update { it.copy(isLoading = true) }
