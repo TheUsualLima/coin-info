@@ -1,6 +1,7 @@
 package com.example.coininfo.ui
 
 import com.example.coininfo.data.Coin
+import com.example.coininfo.domain.GetCoinDetailsUseCase
 import com.example.coininfo.domain.GetCoinsUseCase
 import com.example.coininfo.ui.home.HomeViewModel
 import io.mockk.coEvery
@@ -26,13 +27,15 @@ class HomeViewModelTest {
 
     private val dispatcher: TestDispatcher = StandardTestDispatcher()
     private lateinit var viewModel: HomeViewModel
-    private lateinit var useCase: GetCoinsUseCase
+    private lateinit var getCoinsUseCase: GetCoinsUseCase
+    private lateinit var getCoinDetailsUseCase: GetCoinDetailsUseCase
 
     @BeforeEach
     fun setup() {
         Dispatchers.setMain(dispatcher)
-        useCase = mockk()
-        viewModel = HomeViewModel(useCase)
+        getCoinsUseCase = mockk()
+        getCoinDetailsUseCase = mockk()
+        viewModel = HomeViewModel(getCoinsUseCase, getCoinDetailsUseCase, dispatcher = dispatcher)
     }
 
     @AfterEach
@@ -41,9 +44,9 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun `given usecase returns null when loading coin data then state error is true`() {
+    fun `given GetCoinsUseCase returns null when loading coin data then state error is true`() {
         coEvery {
-            useCase.execute()
+            getCoinsUseCase.execute()
         } returns null
 
         runTest {
@@ -54,9 +57,9 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun `given usecase returns a list when loading coin data then state error is false`() {
+    fun `given GetCoinsUseCase returns a list when loading coin data then state error is false`() {
         coEvery {
-            useCase.execute()
+            getCoinsUseCase.execute()
         } returns listOf(mockk())
 
         runTest {
@@ -67,10 +70,10 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun `given usecase returns a list when loading coin data then state is updated with that list`() {
+    fun `given GetCoinsUseCase returns a list when loading coin data then state is updated with that list`() {
         val expectedCoinList: List<Coin> = listOf(mockk())
         coEvery {
-            useCase.execute()
+            getCoinsUseCase.execute()
         } returns expectedCoinList
 
         runTest {
@@ -81,7 +84,7 @@ class HomeViewModelTest {
     }
 
     @Test
-    fun `given usecase returns a list when loading coin data then data is sorted by name`() {
+    fun `given GetCoinsUseCase returns a list when loading coin data then data is sorted by name`() {
         val coin1: Coin = mockk()
         val coin2: Coin = mockk()
         val coin3: Coin = mockk()
@@ -93,13 +96,40 @@ class HomeViewModelTest {
         every { coin3.name } returns "Bitcoin"
         every { coin4.name } returns "Chainlink"
         coEvery {
-            useCase.execute()
+            getCoinsUseCase.execute()
         } returns mockCoins
 
         runTest {
             viewModel.loadCoinData()
             advanceUntilIdle()
             assertEquals(expectedList, viewModel.state.value.coinListData)
+        }
+    }
+
+    @Test
+    fun `given getCoinDetailsUseCase returns a Coin when loading coin extra details then update showCoin to true`() {
+        coEvery {
+            getCoinDetailsUseCase.execute("btc-bitcoin")
+        } returns mockk()
+
+        runTest {
+            viewModel.loadCoin("btc-bitcoin")
+            advanceUntilIdle()
+            assertTrue(viewModel.state.value.showCoin)
+        }
+    }
+
+    @Test
+    fun `given getCoinDetailsUseCase returns a Coin when loading coin extra details then state is updated with that info`() {
+        val expectedCoin = mockk<Coin>()
+        coEvery {
+            getCoinDetailsUseCase.execute("btc-bitcoin")
+        } returns expectedCoin
+
+        runTest {
+            viewModel.loadCoin("btc-bitcoin")
+            advanceUntilIdle()
+            assertEquals(expectedCoin, viewModel.state.value.coinData)
         }
     }
 }

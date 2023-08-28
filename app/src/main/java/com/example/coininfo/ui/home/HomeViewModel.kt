@@ -4,15 +4,21 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.example.coininfo.data.Coin
+import com.example.coininfo.domain.GetCoinDetailsUseCase
 import com.example.coininfo.domain.GetCoinsUseCase
+import kotlinx.coroutines.CoroutineDispatcher
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class HomeViewModel(
-    private val getCoinsUseCase: GetCoinsUseCase
+    private val getCoinsUseCase: GetCoinsUseCase,
+    private val getCoinDetailsUseCase: GetCoinDetailsUseCase,
+    private val dispatcher: CoroutineDispatcher = Dispatchers.Default
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(HomeState())
@@ -41,12 +47,19 @@ class HomeViewModel(
         }
     }
 
-    fun loadCoin(id: Coin) {
-        _state.update {
-            it.copy(
-                showCoin = true,
-                coinData = id
-            )
+    fun loadCoin(id: String) {
+        viewModelScope.launch {
+            startLoading()
+            val coinDetailResponse = getCoinDetailsUseCase.execute(id)
+            if (coinDetailResponse != null) {
+                _state.update {
+                    it.copy(
+                        showCoin = true,
+                        coinData = coinDetailResponse
+                    )
+                }
+            }
+            stopLoading()
         }
     }
 
@@ -54,7 +67,9 @@ class HomeViewModel(
         _state.update { it.copy(showCoin = false) }
     }
 
-    private fun sortByName(coinList: List<Coin>): List<Coin> = coinList.sortedBy { it.name }
+    private suspend fun sortByName(coinList: List<Coin>): List<Coin> = withContext(dispatcher) {
+        coinList.sortedBy { it.name }
+    }
 
     private fun startLoading() {
         _state.update { it.copy(isLoading = true) }
@@ -65,12 +80,13 @@ class HomeViewModel(
     }
 
     class Factory(
-        private val getCoinsUseCase: GetCoinsUseCase
+        private val getCoinsUseCase: GetCoinsUseCase,
+        private val getCoinDetailsUseCase: GetCoinDetailsUseCase
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             if (modelClass.isAssignableFrom(HomeViewModel::class.java)) {
-                return HomeViewModel(getCoinsUseCase) as T
+                return HomeViewModel(getCoinsUseCase, getCoinDetailsUseCase) as T
             }
             throw IllegalArgumentException("Unable to construct viewmodel")
         }

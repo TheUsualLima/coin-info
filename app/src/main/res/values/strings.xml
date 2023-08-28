@@ -6,4 +6,15 @@
     <string name="reload_button">Reload Data</string>
     <string name="default_error_text">There was an error processing this action</string>
     <string name="fab_content_description">Return to top of list</string>
+    <string name="coin_name_template">Name: %1$s</string>
+    <string name="coin_id_template">ID: %1$s</string>
+    <string name="coin_symbol_template">Symbol: %1$s</string>
+    <string name="coin_type_template">Type: %1$s</string>
+    <string name="coin_date_started_template">Date Started: %1$s</string>
+    <string name="coin_team_members_template">Team members: %1$s</string>
+    <string name="coin_tags_template">Tags: %1$s</string>
+    <string name="coin_description_template">Description: %1$s</string>
+    <string name="coin_message_template">Message: %1$s</string>
+    <string name="coin_is_open_source_template">Is open source: %1$s</string>
+    <string name="coin_dev_status_template">Dev Status: %1$s</string>
 </resources>

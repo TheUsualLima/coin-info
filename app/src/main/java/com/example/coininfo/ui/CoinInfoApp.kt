@@ -5,6 +5,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.coininfo.domain.GetCoinDetailsUseCase
 import com.example.coininfo.domain.GetCoinsUseCase
 import com.example.coininfo.ui.home.Home
 import com.example.coininfo.ui.home.HomeViewModel
@@ -19,7 +20,10 @@ fun CoinInfoApp(
     ) {
         composable(Screen.Home.route) {
             val homeViewModel = viewModel<HomeViewModel>(
-                factory = HomeViewModel.Factory(getCoinsUseCase = GetCoinsUseCase())
+                factory = HomeViewModel.Factory(
+                    getCoinsUseCase = GetCoinsUseCase(),
+                    getCoinDetailsUseCase = GetCoinDetailsUseCase()
+                )
             )
             Home(
                 state = homeViewModel.state.collectAsState(),
