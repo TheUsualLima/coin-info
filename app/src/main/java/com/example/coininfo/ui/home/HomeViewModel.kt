@@ -19,8 +19,8 @@ class HomeViewModel(
     val state: StateFlow<HomeState> = _state.asStateFlow()
 
     init {
-//        loadCoinData()
-        _state.update { it.copy(error = true) } // For testing the error state
+        loadCoinData()
+//        _state.update { it.copy(error = true) } // For testing the error state
     }
 
     fun loadCoinData() {
@@ -30,7 +30,7 @@ class HomeViewModel(
             if (coinResponse != null) {
                 _state.update {
                     it.copy(
-                        coinData = sortByName(coinResponse),
+                        coinListData = sortByName(coinResponse),
                         error = false
                     )
                 }
@@ -39,6 +39,19 @@ class HomeViewModel(
             }
             stopLoading()
         }
+    }
+
+    fun loadCoin(id: Coin) {
+        _state.update {
+            it.copy(
+                showCoin = true,
+                coinData = id
+            )
+        }
+    }
+
+    fun hideCoin() {
+        _state.update { it.copy(showCoin = false) }
     }
 
     private fun sortByName(coinList: List<Coin>): List<Coin> = coinList.sortedBy { it.name }
@@ -67,5 +80,7 @@ class HomeViewModel(
 data class HomeState(
     val error: Boolean = false,
     val isLoading: Boolean = false,
-    val coinData: List<Coin> = emptyList()
+    val coinListData: List<Coin> = emptyList(),
+    val showCoin: Boolean = false,
+    val coinData: Coin? = null,
 )

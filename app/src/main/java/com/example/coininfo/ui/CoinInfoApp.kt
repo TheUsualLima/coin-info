@@ -23,7 +23,9 @@ fun CoinInfoApp(
             )
             Home(
                 state = homeViewModel.state.collectAsState(),
-                loadData = homeViewModel::loadCoinData
+                loadData = homeViewModel::loadCoinData,
+                loadCoin = homeViewModel::loadCoin,
+                dismissCoinDialog = homeViewModel::hideCoin
             )
         }
     }

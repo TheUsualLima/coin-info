@@ -76,7 +76,7 @@ class HomeViewModelTest {
         runTest {
             viewModel.loadCoinData()
             advanceUntilIdle()
-            assertEquals(expectedCoinList, viewModel.state.value.coinData)
+            assertEquals(expectedCoinList, viewModel.state.value.coinListData)
         }
     }
 
@@ -99,7 +99,7 @@ class HomeViewModelTest {
         runTest {
             viewModel.loadCoinData()
             advanceUntilIdle()
-            assertEquals(expectedList, viewModel.state.value.coinData)
+            assertEquals(expectedList, viewModel.state.value.coinListData)
         }
     }
 }
