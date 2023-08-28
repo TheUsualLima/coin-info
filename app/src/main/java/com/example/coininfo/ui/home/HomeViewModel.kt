@@ -19,7 +19,8 @@ class HomeViewModel(
     val state: StateFlow<HomeState> = _state.asStateFlow()
 
     init {
-        loadCoinData()
+//        loadCoinData()
+        _state.update { it.copy(error = true) } // For testing the error state
     }
 
     fun loadCoinData() {

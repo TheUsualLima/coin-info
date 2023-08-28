@@ -11,7 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Divider
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
@@ -20,12 +19,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.coininfo.R
 import com.example.coininfo.ui.composables.BaseScaffold
+import com.example.coininfo.ui.composables.ErrorPrompt
 import com.example.coininfo.ui.composables.LoadingSpinner
 import com.example.coininfo.ui.home.composables.CoinItem
 
 @Composable
 fun Home(
-    state: State<HomeState>
+    state: State<HomeState>,
+    loadData: () -> Unit
 ) {
     BaseScaffold(title = stringResource(R.string.home_title)) {
         Column(
@@ -33,7 +34,12 @@ fun Home(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             if (state.value.error) {
-                Text(text = "There was an error")
+                ErrorPrompt(
+                    errorMessage = stringResource(R.string.default_error_text),
+                    buttonText = stringResource(R.string.reload_button),
+                    buttonOnClick = loadData,
+                    modifier = Modifier.fillMaxSize()
+                )
             } else {
                 LazyColumn(modifier = Modifier.fillMaxWidth()) {
                     itemsIndexed(

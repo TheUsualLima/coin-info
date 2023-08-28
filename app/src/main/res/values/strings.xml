@@ -3,4 +3,6 @@
     <string name="home_title">Coin Info</string>
     <string name="coin_item_active">Active</string>
     <string name="coin_item_inactive">Inactive</string>
+    <string name="reload_button">Reload Data</string>
+    <string name="default_error_text">There was an error processing this action</string>
 </resources>
