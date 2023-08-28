@@ -5,4 +5,5 @@
     <string name="coin_item_inactive">Inactive</string>
     <string name="reload_button">Reload Data</string>
     <string name="default_error_text">There was an error processing this action</string>
+    <string name="fab_content_description">Return to top of list</string>
 </resources>
