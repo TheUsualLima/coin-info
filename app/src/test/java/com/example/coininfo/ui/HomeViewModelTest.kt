@@ -1,8 +1,10 @@
 package com.example.coininfo.ui
 
 import com.example.coininfo.data.Coin
+import com.example.coininfo.data.Tag
 import com.example.coininfo.domain.GetCoinDetailsUseCase
 import com.example.coininfo.domain.GetCoinsUseCase
+import com.example.coininfo.domain.GetTagsUseCase
 import com.example.coininfo.ui.home.HomeViewModel
 import io.mockk.coEvery
 import io.mockk.every
@@ -29,13 +31,15 @@ class HomeViewModelTest {
     private lateinit var viewModel: HomeViewModel
     private lateinit var getCoinsUseCase: GetCoinsUseCase
     private lateinit var getCoinDetailsUseCase: GetCoinDetailsUseCase
+    private lateinit var getTagsUseCase: GetTagsUseCase
 
     @BeforeEach
     fun setup() {
         Dispatchers.setMain(dispatcher)
         getCoinsUseCase = mockk()
         getCoinDetailsUseCase = mockk()
-        viewModel = HomeViewModel(getCoinsUseCase, getCoinDetailsUseCase, dispatcher = dispatcher)
+        getTagsUseCase = mockk()
+        viewModel = HomeViewModel(getCoinsUseCase, getCoinDetailsUseCase, getTagsUseCase, dispatcher = dispatcher)
     }
 
     @AfterEach
@@ -50,7 +54,7 @@ class HomeViewModelTest {
         } returns null
 
         runTest {
-            viewModel.loadCoinData()
+            viewModel.loadData()
             advanceUntilIdle()
             assertTrue(viewModel.state.value.error)
         }
@@ -63,7 +67,7 @@ class HomeViewModelTest {
         } returns listOf(mockk())
 
         runTest {
-            viewModel.loadCoinData()
+            viewModel.loadData()
             advanceUntilIdle()
             assertFalse(viewModel.state.value.error)
         }
@@ -77,7 +81,7 @@ class HomeViewModelTest {
         } returns expectedCoinList
 
         runTest {
-            viewModel.loadCoinData()
+            viewModel.loadData()
             advanceUntilIdle()
             assertEquals(expectedCoinList, viewModel.state.value.coinListData)
         }
@@ -100,7 +104,7 @@ class HomeViewModelTest {
         } returns mockCoins
 
         runTest {
-            viewModel.loadCoinData()
+            viewModel.loadData()
             advanceUntilIdle()
             assertEquals(expectedList, viewModel.state.value.coinListData)
         }
@@ -130,6 +134,52 @@ class HomeViewModelTest {
             viewModel.loadCoin("btc-bitcoin")
             advanceUntilIdle()
             assertEquals(expectedCoin, viewModel.state.value.coinData)
+        }
+    }
+
+    @Test
+    fun `given tag selected when filtering then coinlistdata should only include items with that tag`() {
+        val coin1 = mockk<Coin>()
+        val coin2 = mockk<Coin>()
+        val coin3 = mockk<Coin>()
+        val coin4 = mockk<Coin>()
+        val mockCoins = listOf(coin1, coin2, coin3, coin4)
+        val expectedList = listOf(coin1, coin3)
+
+        every { coin1.name } returns "a"
+        every { coin2.name } returns "b"
+        every { coin3.name } returns "c"
+        every { coin4.name } returns "d"
+        every { coin1.tags } returns listOf(mockk<Tag>().apply {
+            every {
+                this@apply.id
+            } returns "crypto"
+        })
+        every { coin2.tags } returns listOf(mockk<Tag>().apply {
+            every {
+                this@apply.id
+            } returns "bean"
+        })
+        every { coin3.tags } returns listOf(mockk<Tag>().apply {
+            every {
+                this@apply.id
+            } returns "crypto"
+        })
+        every { coin4.tags } returns listOf(mockk<Tag>().apply {
+            every {
+                this@apply.id
+            } returns "token"
+        })
+
+        coEvery { getTagsUseCase.execute() } returns listOf<Tag>()
+        coEvery { getCoinsUseCase.execute() } returns mockCoins
+
+        runTest {
+            viewModel.loadCoin("btc-bitcoin")
+            advanceUntilIdle()
+            viewModel.selectTag("crypto")
+            advanceUntilIdle()
+            assertEquals(expectedList, viewModel.state.value.coinListData)
         }
     }
 }

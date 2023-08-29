@@ -15,4 +15,7 @@ interface CoinRepository {
 
     @GET("coins/{id}")
     suspend fun getCoin(@Path("id") id: String): Response<Coin>
+
+    @GET("tags")
+    suspend fun getTags(): Response<List<Tag>>
 }

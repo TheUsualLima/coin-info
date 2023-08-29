@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.coininfo.domain.GetCoinDetailsUseCase
 import com.example.coininfo.domain.GetCoinsUseCase
+import com.example.coininfo.domain.GetTagsUseCase
 import com.example.coininfo.ui.home.Home
 import com.example.coininfo.ui.home.HomeViewModel
 
@@ -22,14 +23,16 @@ fun CoinInfoApp(
             val homeViewModel = viewModel<HomeViewModel>(
                 factory = HomeViewModel.Factory(
                     getCoinsUseCase = GetCoinsUseCase(),
-                    getCoinDetailsUseCase = GetCoinDetailsUseCase()
+                    getCoinDetailsUseCase = GetCoinDetailsUseCase(),
+                    getTagsUseCase = GetTagsUseCase()
                 )
             )
             Home(
                 state = homeViewModel.state.collectAsState(),
-                loadData = homeViewModel::loadCoinData,
+                loadData = homeViewModel::loadData,
                 loadCoin = homeViewModel::loadCoin,
-                dismissCoinDialog = homeViewModel::hideCoin
+                dismissCoinDialog = homeViewModel::hideCoin,
+                selectTag = homeViewModel::selectTag
             )
         }
     }

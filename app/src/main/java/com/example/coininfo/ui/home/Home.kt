@@ -32,6 +32,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.example.coininfo.R
 import com.example.coininfo.ui.composables.BaseScaffold
+import com.example.coininfo.ui.composables.DropDown
 import com.example.coininfo.ui.composables.ErrorPrompt
 import com.example.coininfo.ui.composables.LoadingSpinner
 import com.example.coininfo.ui.home.composables.CoinExtraDetails
@@ -44,7 +45,8 @@ fun Home(
     state: State<HomeState>,
     loadData: () -> Unit,
     loadCoin: (id: String) -> Unit,
-    dismissCoinDialog: () -> Unit
+    dismissCoinDialog: () -> Unit,
+    selectTag: (String) -> Unit
 ) {
     val pullRefreshState = rememberPullRefreshState(refreshing = false, onRefresh = loadData)
     val listState = rememberLazyListState()
@@ -72,38 +74,54 @@ fun Home(
                     modifier = Modifier.fillMaxSize()
                 )
             } else {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .pullRefresh(pullRefreshState)
+                Column(
+                    modifier = Modifier.fillMaxSize()
                 ) {
-                    LazyColumn(modifier = Modifier.fillMaxWidth(), state = listState) {
-                        itemsIndexed(
-                            items = state.value.coinListData,
-                            key = { _, coin ->
-                                coin.id
+                    if (state.value.tagOptions.isNotEmpty()) {
+                        DropDown(
+                            selectedOption = state.value.selectedTag,
+                            options = state.value.tagOptions,
+                            onOptionSelected = {
+                                selectTag(it)
+                                coroutineScope.launch {
+                                    listState.animateScrollToItem(0)
+                                }
                             }
-                        ) { index, coin ->
-                            CoinItem(
-                                coin = coin,
-                                modifier = Modifier
-                                    .animateItemPlacement(animationSpec = tween(500))
-                                    .clickable { loadCoin(coin.id) }
-                                    .padding(vertical = 8.dp)
-                            )
-                            if (index < state.value.coinListData.lastIndex) Divider(modifier = Modifier.padding(horizontal = 24.dp))
-                        }
+                        )
                     }
-                    PullRefreshIndicator(
-                        refreshing = state.value.isLoading,
-                        state = pullRefreshState,
-                        modifier = Modifier.align(Alignment.TopCenter)
-                    )
-                    if (state.value.showCoin) {
-                        AlertDialog(onDismissRequest = dismissCoinDialog) {
-                            state.value.coinData?.let { coin ->
-                                CoinExtraDetails(coin = coin)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .pullRefresh(pullRefreshState)
+                    ) {
+                        LazyColumn(modifier = Modifier.fillMaxWidth(), state = listState) {
+                            itemsIndexed(
+                                items = state.value.coinListData,
+                                key = { _, coin ->
+                                    coin.id
+                                }
+                            ) { index, coin ->
+                                CoinItem(
+                                    coin = coin,
+                                    modifier = Modifier
+                                        .animateItemPlacement(animationSpec = tween(500))
+                                        .clickable { loadCoin(coin.id) }
+                                        .padding(vertical = 8.dp)
+                                )
+                                if (index < state.value.coinListData.lastIndex) Divider(modifier = Modifier.padding(horizontal = 24.dp))
                             }
+                        }
+                        PullRefreshIndicator(
+                            refreshing = state.value.isLoading,
+                            state = pullRefreshState,
+                            modifier = Modifier.align(Alignment.TopCenter)
+                        )
+                    }
+                }
+                if (state.value.showCoin) {
+                    AlertDialog(onDismissRequest = dismissCoinDialog) {
+                        state.value.coinData?.let { coin ->
+                            CoinExtraDetails(coin = coin)
                         }
                     }
                 }

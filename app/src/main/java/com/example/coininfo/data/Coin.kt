@@ -26,6 +26,8 @@ data class Coin(
 data class Tag(
     @JsonProperty("id") val id: String,
     @JsonProperty("name") val name: String,
+    @JsonProperty("description") val description: String?,
+    @JsonProperty("type") val type: String?,
     @JsonProperty("coin_counter") val coinCounter: Int,
     @JsonProperty("ico_counter") val icoCounter: Int
 )

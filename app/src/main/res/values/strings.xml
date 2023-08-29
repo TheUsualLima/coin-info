@@ -17,4 +17,5 @@
     <string name="coin_message_template">Message: %1$s</string>
     <string name="coin_is_open_source_template">Is open source: %1$s</string>
     <string name="coin_dev_status_template">Dev Status: %1$s</string>
+    <string name="drop_down_label">Filter by tags</string>
 </resources>
